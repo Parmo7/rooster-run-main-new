@@ -81,13 +81,12 @@ public class PlayerProgressBar implements Disposable {
 			playerImages[i] = new Image(new Texture("progress_bar/player" + i + ".png"));
 			playerImages[i].setColor(1f, 1f, 1f, 0.6f);	
 		}
+		playerImages[0].setColor(1f, 1f, 1f, 0.9f);
 	}
 
-	public void draw() {
-		playerImages[0].setBounds(12 + relativePositions[0], 372f, PLAYER_RADIUS, PLAYER_RADIUS + 3);
-		
-		for (int i = 1; i < totalPlayers; i ++)
-			playerImages[i].setBounds(12 + relativePositions[i], 371f, PLAYER_RADIUS, PLAYER_RADIUS);
+	public void draw() {		
+		for (int i = 0; i < totalPlayers; i ++)
+			playerImages[i].setBounds(12 + relativePositions[i], 372f, PLAYER_RADIUS, PLAYER_RADIUS + 3);
 		
 		Group group = new Group();
 		group.addActor(background);
