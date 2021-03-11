@@ -92,7 +92,7 @@ public class PlayScreen implements Screen {
 		// Create our game HUD for scores /timers/level info/players in the game etc
 		hud = new Hud(game.batch);
 		hud2 = new Hud2(game.batch);
-		progressBar = new PlayerProgressBar(game.batch);
+		progressBar = new PlayerProgressBar(game.batch, 2);
 
 		// Load our map and setup our map renderer
 		mapLoader = new TmxMapLoader();
@@ -229,7 +229,7 @@ public class PlayScreen implements Screen {
 //			hud2.updateScore();
 //		}
 		if (player.currentState != Rooster.State.DEAD)
-			progressBar.updateProgress(player.getPositionX());
+			progressBar.updateProgress(new float[] {player.getPositionX(), player2.getPositionX()});
 
 		// Everytime chicken moves we want to track him with our game cam
 		if (clientID == MPServer.playerCount.get(0))

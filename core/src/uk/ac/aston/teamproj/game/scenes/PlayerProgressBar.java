@@ -27,8 +27,8 @@ public class PlayerProgressBar implements Disposable {
 	
 	// progress bar
 	private Image background;
-	private Image player;	
-	private float playerProgressPos;	
+	//private Image player;	
+	//private float relativePosition;	
 		
 	// coins
 	private Image coin;
@@ -38,16 +38,19 @@ public class PlayerProgressBar implements Disposable {
 	// lives
 	private Image[] hearts = new Image[3];
 	
-	public PlayerProgressBar(SpriteBatch sb) {
+	// players
+	private final int totalPlayers;
+	private final float[] relativePositions;
+	private final Image[] playerImages;
+	
+	public PlayerProgressBar(SpriteBatch sb, int players) {
 		viewport = new FitViewport(MainGame.V_WIDTH / 3, MainGame.V_HEIGHT / 3, new OrthographicCamera());
 		stage = new Stage(viewport, sb);
 		
 		// progress bar
-		background = new Image(new Texture("progress_bar/grey_bar.png"));
-		player = new Image(new Texture("progress_bar/rooster_new.png"));		
+		background = new Image(new Texture("progress_bar/grey_bar.png"));		
 		background.setColor(1f, 1f, 1f, 0.5f);
 		background.setBounds(10, 370, BAR_WIDTH, BAR_HEIGHT);
-		player.setColor(1f, 1f, 1f, 0.6f);		
 		
 		// coins
 		coin = new Image(new Texture("progress_bar/coin.png"));
@@ -69,14 +72,27 @@ public class PlayerProgressBar implements Disposable {
 			hearts[i].setColor(1f, 1f, 1f, 0.6f);
 			hearts[i].setBounds(x, 374, 32, 25);
 		}
+		
+		// players
+		this.totalPlayers = players;
+		this.relativePositions = new float[players];
+		this.playerImages = new Image[players];
+		for (int i = 0; i < players; i++) {
+			playerImages[i] = new Image(new Texture("progress_bar/player" + i + ".png"));
+			playerImages[i].setColor(1f, 1f, 1f, 0.6f);	
+		}
 	}
 
 	public void draw() {
-		player.setBounds(12 + playerProgressPos, 371f, PLAYER_RADIUS, PLAYER_RADIUS);
+		playerImages[0].setBounds(12 + relativePositions[0], 372f, PLAYER_RADIUS, PLAYER_RADIUS + 3);
+		
+		for (int i = 1; i < totalPlayers; i ++)
+			playerImages[i].setBounds(12 + relativePositions[i], 371f, PLAYER_RADIUS, PLAYER_RADIUS);
 		
 		Group group = new Group();
 		group.addActor(background);
-		group.addActor(player);
+		for (int i = totalPlayers - 1; i >= 0; i --)
+			group.addActor(playerImages[i]);
 		for (Image life : hearts)
 			group.addActor(life);
 		group.addActor(coin);
@@ -92,11 +108,20 @@ public class PlayerProgressBar implements Disposable {
 		stage.dispose();
 	}
 	
-	public void updateProgress(float position) {
-		float actualPosition = (position * MainGame.PPM) / 100;
-		float progress = (actualPosition * 100) / MAP_SIZE;
-		
-		this.playerProgressPos = (progress * (BAR_WIDTH - PLAYER_RADIUS/2)) / 100;
+//	public void updateProgress(float position) {
+//		float actualPosition = (position * MainGame.PPM) / 100;
+//		float percentage = (actualPosition * 100) / MAP_SIZE;
+//		
+//		this.relativePosition = (percentage * (BAR_WIDTH - PLAYER_RADIUS/2)) / 100;
+//	}
+	
+	public void updateProgress(float[] positions) {
+		for (int i = 0; i < positions.length; i++) {
+			float actualPosition = (positions[i] * MainGame.PPM) / 100;
+			float percentage = (actualPosition * 100) / MAP_SIZE;
+			
+			relativePositions[i] = (percentage * (BAR_WIDTH - PLAYER_RADIUS/2)) / 100;
+		}
 	}
 	
 	public void updateCoins(int value) {
