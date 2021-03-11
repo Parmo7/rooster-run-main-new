@@ -30,6 +30,8 @@ import uk.ac.aston.teamproj.game.net.packet.Movement;
 import uk.ac.aston.teamproj.game.scenes.Hud;
 import uk.ac.aston.teamproj.game.scenes.Hud2;
 import uk.ac.aston.teamproj.game.scenes.PlayerProgressBar;
+import uk.ac.aston.teamproj.game.scenes.PlayersTab;
+import uk.ac.aston.teamproj.game.scenes.SoundManager;
 import uk.ac.aston.teamproj.game.sprites.Bomb;
 import uk.ac.aston.teamproj.game.sprites.Rooster;
 import uk.ac.aston.teamproj.game.tools.B2WorldCreator;
@@ -47,8 +49,6 @@ public class PlayScreen implements Screen {
 	// Aspect ratio
 	private OrthographicCamera gamecam;
 	private Viewport gamePort;
-	private Hud hud;
-	private Hud2 hud2;
 
 	// Tiled map variables
 	private TmxMapLoader mapLoader;
@@ -72,11 +72,15 @@ public class PlayScreen implements Screen {
 	public static int clientID;
 	private HashMap<Bomb, Float> toExplode = new HashMap<>();
 	
-	//Stats
-	
+	//Stats	
 	public static int coins;
 	
+	
+	// progress bar and tab
+	private static final int NUM_PLAYERS = 2;
 	private final PlayerProgressBar progressBar;
+	private final PlayersTab tab;
+	private boolean isTabOn = false; 
 	
 	public PlayScreen(MainGame game, int clientID, String mapPath) {
 		this.game = game;
@@ -89,10 +93,9 @@ public class PlayScreen implements Screen {
 		// Create a FitViewport to maintain virtual aspect ratio despite screen size
 		gamePort = new FitViewport(MainGame.V_WIDTH / MainGame.PPM, MainGame.V_HEIGHT / MainGame.PPM, gamecam);
 
-		// Create our game HUD for scores /timers/level info/players in the game etc
-		hud = new Hud(game.batch);
-		hud2 = new Hud2(game.batch);
-		progressBar = new PlayerProgressBar(game.batch, 2);
+		// Create progress bar and tab
+		progressBar = new PlayerProgressBar(game.batch, NUM_PLAYERS);
+		tab = new PlayersTab(game.batch, NUM_PLAYERS);
 
 		// Load our map and setup our map renderer
 		mapLoader = new TmxMapLoader();
@@ -121,8 +124,6 @@ public class PlayScreen implements Screen {
 		} else {
 			world.setContactListener(new WorldContactListener(this, player2));
 		}
-//		Sound sound = Gdx.audio.newSound(Gdx.files.internal("game_soundtrack.mp3"));
-//        sound.play(1F);
 	}
 
 	@Override
@@ -139,7 +140,7 @@ public class PlayScreen implements Screen {
 
 					 //plays button swoosh sound
 					Sound sound = Gdx.audio.newSound(Gdx.files.internal("electric-transition-super-quick-www.mp3"));
-	                sound.play(1F);
+	                SoundManager.playSound(sound);
 
 
 					Movement packet = new Movement();
@@ -172,7 +173,7 @@ public class PlayScreen implements Screen {
 			if (player2.currentState != Rooster.State.DEAD) {
 				if (Gdx.input.isKeyJustPressed(Input.Keys.UP) && jumpCount2 < MAX_JUMPS) {
 					Sound sound = Gdx.audio.newSound(Gdx.files.internal("electric-transition-super-quick-www.mp3"));
-	                sound.play(1F);
+	                SoundManager.playSound(sound);
 
 					Movement packet = new Movement();
 					packet.clientID = 1;
@@ -204,7 +205,10 @@ public class PlayScreen implements Screen {
 
             System.out.println(clientID + " : rooster2 " + player2.getPositionX());
         }
-
+        
+        if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
+        	isTabOn = !isTabOn;
+        }
 	}
 
 	/*
@@ -291,14 +295,6 @@ public class PlayScreen implements Screen {
 		progressBar.updateLives();
 	}
 
-	public void updateCoinsP2() {
-		hud2.updateCoins(10);
-	}
-
-	public void updateLivesP2() {
-		hud2.updateLives();
-	}
-
 	@Override
 	public void render(float delta) {
 		// separate our update logic from render
@@ -321,15 +317,11 @@ public class PlayScreen implements Screen {
 		player2.draw(game.batch);
 		game.batch.end();
 
-		// Set our batch to now draw what the hud camera sees
-//		game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-//		hud.stage.draw();
-
-//		game.batch.setProjectionMatrix(hud2.stage.getCamera().combined);
-//		hud2.stage.draw();
-		
-		progressBar.draw();
-		
+		if (!isTabOn)
+			progressBar.draw();
+		else
+			tab.draw();
+			
 		if (gameOver()) {
 			game.setScreen(new GameOverScreen(game));
 			dispose();
@@ -366,8 +358,6 @@ public class PlayScreen implements Screen {
 		renderer.dispose();
 		world.dispose();
 		b2dr.dispose();
-		hud.dispose();
-		hud2.dispose();
 	}
 
 	public TextureAtlas getAtlas() {

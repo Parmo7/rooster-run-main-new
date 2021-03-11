@@ -59,7 +59,7 @@ public class LoadingScreen implements Screen {
         batch.end();
                 
         float elapsedTime = (System.currentTimeMillis() - startTime) / 1000.0f;
-        float progress = elapsedTime * 10;
+        float progress = elapsedTime * 10 * 100;
         // Width of progress bar on screen relevant to Screen width
         float progressBarWidth = (MainGame.V_WIDTH/6 / 100) * progress;
 

@@ -123,7 +123,7 @@ public class WorldContactListener implements ContactListener {
 					Bomb bomb = ((Bomb) bombFixture.getUserData());
 					bomb.onHit();
 					playScreen.makeBombExplode(bomb);
-					playScreen.updateLivesP2();
+					//playScreen.updateLivesP2();
 					break;
 	
 				case (MainGame.ROOSTER_BIT2 | MainGame.BRICK_BIT):
@@ -138,7 +138,7 @@ public class WorldContactListener implements ContactListener {
 					Fixture coinFixture = (fixA.getFilterData().categoryBits == MainGame.COIN_BIT) ? fixA : fixB;
 					((Coin) coinFixture.getUserData()).onHit();
 					
-					playScreen.updateCoinsP2();
+					//playScreen.updateCoinsP2();
 					
 					break;
 	
