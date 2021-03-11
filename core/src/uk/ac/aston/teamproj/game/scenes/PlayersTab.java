@@ -54,7 +54,7 @@ public class PlayersTab implements Disposable {
 		coinsLabels = new Label[players];
 		
 		Texture heartTexture = new Texture("progress_bar/heart.png");
-		hearts = new Image
+		hearts = new Image[players][3];
 		
 		// players
 		this.totalPlayers = players;
@@ -66,8 +66,8 @@ public class PlayersTab implements Disposable {
 		}
 		playerIcons[0].setColor(1f, 1f, 1f, 0.9f);
 		
-		for (int i = 0, posY = 370; i < players; i++, posY -= BAR_HEIGHT-10 ) {
-			// bar			
+		for (int i = 0, posY = 370; i < players; i++, posY -= BAR_HEIGHT + 10 ) {
+			// bars			
 			bars[i] = new Image(barTexture);
 			bars[i].setColor(1f, 1f, 1f, 0.5f);
 			bars[i].setBounds(10, posY, BAR_WIDTH, BAR_HEIGHT);
@@ -84,37 +84,33 @@ public class PlayersTab implements Disposable {
 			coinsLabels[i].setY(posY + 6);
 			coinsLabels[i].setFontScale(1.8f);
 			
+			// hearts
+			hearts[i][0] = new Image(heartTexture);
+			hearts[i][1] = new Image(heartTexture);
+			hearts[i][2] = new Image(heartTexture);
 			
+			for (int j = 0, x = 650; j < 3; j++, x += 40) {
+				hearts[i][j].setColor(1f, 1f, 1f, 0.6f);
+				hearts[i][j].setBounds(x, posY + 4, 32, 25);
+			}
 		}
-
-
-		
-//		// lives
-//		Texture heartTexture = ;
-//		hearts[0] = new Image(heartTexture);
-//		hearts[1] = new Image(heartTexture);
-//		hearts[2] = new Image(heartTexture);
-//		
-//		for (int i = 0, x = 650; i < hearts.length; i++, x += 40) {
-//			hearts[i].setColor(1f, 1f, 1f, 0.6f);
-//			hearts[i].setBounds(x, 374, 32, 25);
-//		}
-//		
 
 	}
 
-	public void draw() {		
-//		for (int i = 0; i < totalPlayers; i ++)
-//			playerIcons[i].setBounds(12 + relativePositions[i], 372f, PLAYER_RADIUS, PLAYER_RADIUS + 3);
-//		
-//		Group group = new Group();
-//		group.addActor(bars);
-//		for (int i = totalPlayers - 1; i >= 0; i --)
-//			group.addActor(playerIcons[i]);
-//		for (Image life : hearts)
-//			group.addActor(life);
-//		group.addActor(coin);
-//		group.addActor(coinsLabel);
+	public void draw() {				
+		Group group = new Group();
+		for (int i = 0, posY = 370; i < totalPlayers; i++, posY -= BAR_HEIGHT + 10 ) {
+			group.addActor(bars[i]);
+			
+			playerIcons[i].setBounds(12 + relativePositions[i], posY + 2, PLAYER_RADIUS, PLAYER_RADIUS + 3);
+			group.addActor(playerIcons[i]);
+			
+			for (int j = 0; j < 3; j ++)
+				group.addActor(hearts[i][j]);
+			
+			group.addActor(coins[i]);
+			group.addActor(coinsLabels[i]);
+		}
 		
 		stage.addActor(group);
 		stage.draw();
@@ -137,22 +133,18 @@ public class PlayersTab implements Disposable {
 	}
 	
 	public void updateCoins(int value) {
-		PlayScreen.player.updateCoins(value);
-		coinsCollected = PlayScreen.player.getCoins();
-		coinsLabel.setText(String.format("%02d", coinsCollected));
+//		PlayScreen.player.updateCoins(value);
+//		coinsCollected = PlayScreen.player.getCoins();
+//		coinsLabel.setText(String.format("%02d", coinsCollected));
 	}
 	
 	public void updateLives() {
-		int lives;
-		if (PlayScreen.player.isDead())
-			lives = 0;
-		else
-			lives = PlayScreen.player.getLives();
-		if (lives < hearts.length)
-			hearts[lives].setVisible(false);
-	}
-	
-	public int getCoinsCollected() {
-		return coinsCollected;
+//		int lives;
+//		if (PlayScreen.player.isDead())
+//			lives = 0;
+//		else
+//			lives = PlayScreen.player.getLives();
+//		if (lives < hearts.length)
+//			hearts[lives].setVisible(false);
 	}
 }

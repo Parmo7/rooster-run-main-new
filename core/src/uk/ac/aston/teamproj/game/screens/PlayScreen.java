@@ -232,9 +232,11 @@ public class PlayScreen implements Screen {
 //		if (player2.getPositionX() * MainGame.PPM > (hud2.getScore() + 1) * SCORE_LOC) {
 //			hud2.updateScore();
 //		}
-		if (player.currentState != Rooster.State.DEAD)
+		if (player.currentState != Rooster.State.DEAD) {
 			progressBar.updateProgress(new float[] {player.getPositionX(), player2.getPositionX()});
-
+			tab.updateProgress(new float[] {player.getPositionX(), player2.getPositionX()});
+		}
+			
 		// Everytime chicken moves we want to track him with our game cam
 		if (clientID == MPServer.playerCount.get(0))
 			if (player.currentState != Rooster.State.DEAD) {
